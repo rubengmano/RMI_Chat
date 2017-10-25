@@ -12,21 +12,29 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class Server implements MessageService {
-    final int port = 1080;
+    public String getBuffer() {
+        return buffer;
+    }
 
+    String buffer;
 
     public Server(){
 
     }
 
-    private void connect() throws RemoteException, MalformedURLException, AlreadyBoundException {
-        MessageService stub = (MessageService) UnicastRemoteObject.exportObject( this, 0);
-
-        Registry registry = LocateRegistry.getRegistry();
-        registry.bind("rmiChat", stub);
+    public void connect() throws RemoteException, MalformedURLException, AlreadyBoundException {
+        try {
+            MessageService stub = (MessageService) UnicastRemoteObject.exportObject(this, 0);
+            Registry registry = LocateRegistry.getRegistry();
+            registry.bind("rmiChat", stub);
+            buffer = "rmiChat::Server Ready";
+        } catch (Exception e) {
+            buffer = "rmiChat::ERROR";
+            e.printStackTrace();
+        }
     }
 
-    private void disconnect(){
+    public void disconnect(){
 
     }
 
