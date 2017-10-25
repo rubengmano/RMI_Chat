@@ -13,7 +13,8 @@ public class ClientUI extends JFrame {
 
     Client client;
     JTextArea inputMSG;
-    JButton sendButton, readButton;
+    JButton sendButton, readButton, space;
+    JFrame frame;
 
     public ClientUI(Client client){
         super("CLIENT");
@@ -36,23 +37,36 @@ public class ClientUI extends JFrame {
         inputMSG = new JTextArea(60, 20);
         inputMSG.setWrapStyleWord(true);
         inputMSG.setLineWrap(true);
+        space = new JButton("                 ");
+        space.setOpaque(false);
+        space.setContentAreaFilled(false);
+        space.setBorderPainted(false);
 
     }
 
     private void setupLayout(){
+        JPanel big = new JPanel();
         JPanel mainPanel = new JPanel();
         mainPanel.add(inputMSG);
+        JPanel otherPanel = new JPanel();
+        otherPanel.setBackground(Color.PINK);
+        otherPanel.setPreferredSize(new Dimension(300, 900));
+        otherPanel.setVisible(true);
+
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(sendButton);
         bottomPanel.add(Box.createVerticalGlue());
+        bottomPanel.add(space);
         bottomPanel.add(readButton);
 
         setLayout(new BorderLayout());
 
-        add(mainPanel, BorderLayout.WEST);
-        add(Box.createVerticalGlue());
+        big.add(mainPanel, BorderLayout.WEST);
+        big.add(Box.createVerticalGlue());
+        big.add(otherPanel, BorderLayout.EAST);
 
+        add(big, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
 
     }
