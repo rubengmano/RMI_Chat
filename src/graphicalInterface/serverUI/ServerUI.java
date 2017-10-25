@@ -13,6 +13,7 @@ public class ServerUI extends JFrame {
 
     Server server;
     JButton startButton;
+    JTable table;
 
     public ServerUI(Server server) {
         super("SERVER");
@@ -29,20 +30,21 @@ public class ServerUI extends JFrame {
 
     private void setupComponents(){
         startButton = new JButton("Connect");
+        table = new JTable(server.getRowData(), server.getColumnNames());
         startButton.addActionListener(new startButtonListener());
     }
 
     private void setupLayout(){
-        JPanel mainPanel = new JPanel();
         JPanel bottomPanel = new JPanel();
+        JScrollPane scrollPane = new JScrollPane(table);
 
-        mainPanel.setBackground(Color.CYAN);
         bottomPanel.setBackground(Color.GRAY);
         bottomPanel.add(startButton);
+        table.setFillsViewportHeight(true);
 
         setLayout(new BorderLayout());
 
-        add(mainPanel, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
