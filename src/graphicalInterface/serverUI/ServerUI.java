@@ -78,11 +78,9 @@ public class ServerUI extends JFrame {
                 }
 
                 JOptionPane.showMessageDialog(null, server.getBuffer(), "InfoBox: " + "MiniRogue", JOptionPane.INFORMATION_MESSAGE);
-                startButton.setText("Update");
-            }
-
-            else
+                startButton.setText("Connected");
                 startButton.setDisabledIcon(startButton.getIcon());
+            }
         }
     }
 

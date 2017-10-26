@@ -14,9 +14,9 @@ import java.rmi.server.ServerNotActiveException;
 public class ClientUI extends JFrame {
 
     Client client;
-    JTextArea inputMSG;
+    JTextArea inputMSG ,otherPanel;
     JButton sendButton, readButton, space;
-    JFrame frame;
+
 
     public ClientUI(Client client){
         super("CLIENT");
@@ -50,10 +50,11 @@ public class ClientUI extends JFrame {
         JPanel big = new JPanel();
         JPanel mainPanel = new JPanel();
         mainPanel.add(inputMSG);
-        JPanel otherPanel = new JPanel();
+        otherPanel = new JTextArea();
         otherPanel.setBackground(Color.PINK);
         otherPanel.setPreferredSize(new Dimension(300, 900));
         otherPanel.setVisible(true);
+        otherPanel.setEditable(false);
 
 
         JPanel bottomPanel = new JPanel();
@@ -91,7 +92,7 @@ public class ClientUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             try {
-                client.readMessages();
+                otherPanel.setText(client.readMessages());
             } catch (ServerNotActiveException e) {
                 e.printStackTrace();
             } catch (RemoteException e) {
