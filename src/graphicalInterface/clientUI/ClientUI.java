@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
 
 public class ClientUI extends JFrame {
-
+    Timer timer;
     Client client;
     JTextArea inputMSG ,otherPanel;
     JButton sendButton, readButton, space;
@@ -29,6 +29,7 @@ public class ClientUI extends JFrame {
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         validate();
+        notifyUser();
     }
 
     private void setupComponents(){
@@ -44,6 +45,21 @@ public class ClientUI extends JFrame {
         space.setContentAreaFilled(false);
         space.setBorderPainted(false);
 
+    }
+
+    private void notifyUser(){
+        timer = new Timer(0, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!(client.getBuffer().equals(null))) {
+                    JOptionPane.showMessageDialog(null, client.getBuffer(), "InfoBox: " + "rmi::Chat", JOptionPane.INFORMATION_MESSAGE);
+                    client.setBuffer(null);
+                }
+            }});
+
+        timer.setRepeats(true);
+        timer.setDelay(17);
+        timer.start();
     }
 
     private void setupLayout(){
@@ -81,8 +97,10 @@ public class ClientUI extends JFrame {
             try {
                 client.sendMessage(inputMSG.getText());
             } catch (ServerNotActiveException e) {
+                client.setConnected(false);
                 e.printStackTrace();
             } catch (RemoteException e) {
+                client.setConnected(false);
                 e.printStackTrace();
             }
         }
@@ -94,8 +112,10 @@ public class ClientUI extends JFrame {
             try {
                 otherPanel.setText(client.readMessages());
             } catch (ServerNotActiveException e) {
+                client.setConnected(false);
                 e.printStackTrace();
             } catch (RemoteException e) {
+                client.setConnected(false);
                 e.printStackTrace();
             }
         }

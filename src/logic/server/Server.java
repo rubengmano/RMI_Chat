@@ -2,6 +2,10 @@ package logic.server;
 
 import logic.Message;
 import service.MessageService;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -11,13 +15,11 @@ import java.rmi.server.RemoteServer;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Time;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.Timer;
 
 public class Server extends RemoteServer implements MessageService {
-     int counter = 0;
+    int counter = 0;
     private HashMap messages;
     String buffer;
     Object columnNames[] = { "Message Id", "Client Id", "Message", "Time" };
@@ -51,10 +53,6 @@ public class Server extends RemoteServer implements MessageService {
             buffer = "rmiChat::ERROR";
             e.printStackTrace();
         }
-    }
-
-    public void disconnect(){
-
     }
 
     @Override

@@ -77,7 +77,7 @@ public class ServerUI extends JFrame {
                     e1.printStackTrace();
                 }
 
-                JOptionPane.showMessageDialog(null, server.getBuffer(), "InfoBox: " + "MiniRogue", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, server.getBuffer(), "InfoBox: " + "rmiChat", JOptionPane.INFORMATION_MESSAGE);
                 startButton.setText("Connected");
                 startButton.setDisabledIcon(startButton.getIcon());
             }
