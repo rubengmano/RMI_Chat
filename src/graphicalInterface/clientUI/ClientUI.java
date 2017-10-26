@@ -8,6 +8,8 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
+import java.rmi.server.ServerNotActiveException;
 
 public class ClientUI extends JFrame {
 
@@ -75,14 +77,26 @@ public class ClientUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-
+            try {
+                client.sendMessage(inputMSG.getText());
+            } catch (ServerNotActiveException e) {
+                e.printStackTrace();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     class readButtonListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-
+            try {
+                client.readMessages();
+            } catch (ServerNotActiveException e) {
+                e.printStackTrace();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

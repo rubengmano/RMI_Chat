@@ -8,9 +8,10 @@ import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.util.TimerTask;
 
 public class ServerUI extends JFrame {
-
+    Timer timer;
     Server server;
     JButton startButton;
     JTable table;
@@ -26,12 +27,26 @@ public class ServerUI extends JFrame {
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         validate();
+        refreshTable();
     }
 
     private void setupComponents(){
         startButton = new JButton("Connect");
         table = new JTable(server.getRowData(), server.getColumnNames());
         startButton.addActionListener(new startButtonListener());
+        table.setFillsViewportHeight(true);
+    }
+
+    private void refreshTable(){
+            timer = new Timer(0, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    repaint();
+                }});
+
+            timer.setRepeats(true);
+            timer.setDelay(17);
+            timer.start();
     }
 
     private void setupLayout(){
@@ -63,11 +78,13 @@ public class ServerUI extends JFrame {
                 }
 
                 JOptionPane.showMessageDialog(null, server.getBuffer(), "InfoBox: " + "MiniRogue", JOptionPane.INFORMATION_MESSAGE);
-                startButton.setText("Disconnect");
+                startButton.setText("Update");
             }
 
             else
-                startButton.setText("Connect");
+                startButton.setDisabledIcon(startButton.getIcon());
         }
     }
+
+
 }

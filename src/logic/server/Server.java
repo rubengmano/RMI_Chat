@@ -7,20 +7,24 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RemoteServer;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class Server implements MessageService {
+public class Server extends RemoteServer implements MessageService {
+     int counter = 0;
     private HashMap messages;
     String buffer;
     Object columnNames[] = { "Message Id", "Client Id", "Message", "Time" };
-    Object rowData[][] = {};
+    Object rowData[][] = {{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null}};
 
     public Server(){
-
+        messages = new HashMap<>();
     }
 
     public String getBuffer() {
@@ -39,9 +43,8 @@ public class Server implements MessageService {
         try {
             MessageService stub = (MessageService) UnicastRemoteObject.exportObject(this, 0);
 
-            LocateRegistry.createRegistry(1099);
-            Registry registry = LocateRegistry.getRegistry();
-            registry.rebind("rmiServer", stub);
+            Registry registry = LocateRegistry.createRegistry(1099);
+            registry.rebind("server", stub);
 
             buffer = "rmiChat::Server Ready";
         } catch (Exception e) {
@@ -54,11 +57,10 @@ public class Server implements MessageService {
 
     }
 
-
     @Override
     public void newMessage(String clientID, String message) throws RemoteException {
         System.out.println(clientID + " : " + message);
-        this.messages.put(clientID, new Message(message));
+        messages.put(clientID, new Message(message));
     }
 
     @Override
@@ -73,12 +75,16 @@ public class Server implements MessageService {
             System.out.print(map.getKey() + " : " + map.getValue());
 
             if (map.getKey().equals(clientID)) {
-                return "" + m.getMessageId() + " :: " + map.getKey() + " : " + m.getMessage() + "::" + m.getMessageTime();
+                if (counter == 5)
+                    counter = 0;
+
+                LocalTime localTime = LocalTime.now();
+                rowData[counter++] = new Object[]{m.getMessageId(), map.getKey(), m.getMessage(), Time.valueOf(localTime)};
+
+                return " [Server]" + m.getMessage();
             }
-
-            rowData[rowData.length - 1] = new Object[]{m.getMessageId(), clientID, m.getMessage(), m.getMessageTime()};
-
         }
+
         return "NO MESSAGES";
     }
 }
