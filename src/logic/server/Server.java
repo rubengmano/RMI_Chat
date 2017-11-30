@@ -20,13 +20,16 @@ import java.util.Timer;
 
 public class Server extends RemoteServer implements MessageService {
     int counter = 0;
-    private HashMap messages;
+    int queue = 0;
+    Message messages[];
+    int nMessages = 0;
     String buffer;
     Object columnNames[] = { "Message Id", "Client Id", "Message", "Time" };
-    Object rowData[][] = {{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null}};
+    Object rowData[][] = {{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null},{null, null, null, null}};
+    int id = 0;
 
     public Server(){
-        messages = new HashMap<>();
+        messages = new Message[20];
     }
 
     public String getBuffer() {
@@ -41,13 +44,16 @@ public class Server extends RemoteServer implements MessageService {
         return columnNames;
     }
 
-    public void connect() throws RemoteException, MalformedURLException, AlreadyBoundException {
+    public void connect(int queue) throws RemoteException, MalformedURLException, AlreadyBoundException {
         try {
             MessageService stub = (MessageService) UnicastRemoteObject.exportObject(this, 0);
 
-            Registry registry = LocateRegistry.createRegistry(1099);
+            Registry registry = LocateRegistry.createRegistry(9999);
             registry.rebind("server", stub);
-
+            this.queue = queue;
+            if (this.queue <= 0 || this.queue > 10) {
+                this.queue = 5;
+            }
             buffer = "rmiChat::Server Ready";
         } catch (Exception e) {
             buffer = "rmiChat::ERROR";
@@ -57,32 +63,25 @@ public class Server extends RemoteServer implements MessageService {
 
     @Override
     public void newMessage(String clientID, String message) throws RemoteException {
-        System.out.println(clientID + " : " + message);
-        messages.put(clientID, new Message(message));
+        LocalTime localTime = LocalTime.now();
+        rowData[counter++] = new Object[]{id++, clientID, message, Time.valueOf(localTime)};
+
+        messages[nMessages++] = new Message(message);
     }
 
     @Override
     public String nextMessage(String clientID) throws RemoteException {
-        Set set = messages.entrySet();
-        Iterator i = set.iterator();
 
-        while (i.hasNext()) {
-            Map.Entry map = (Map.Entry) i.next();
-            Message m = (Message) map.getValue();
+        StringJoiner s = new StringJoiner("\n");
 
-            System.out.print(map.getKey() + " : " + map.getValue());
-
-            if (map.getKey().equals(clientID)) {
-                if (counter == 5)
-                    counter = 0;
-
-                LocalTime localTime = LocalTime.now();
-                rowData[counter++] = new Object[]{m.getMessageId(), map.getKey(), m.getMessage(), Time.valueOf(localTime)};
-
-                return " [Server]" + m.getMessage();
+        for(int x = 0; x < nMessages ; x++) {
+            if (!messages[x].isReadBy(clientID)){
+                s.add(messages[x].getMessage());
+                messages[x].readBy(clientID);
+            } else {
+                continue;
             }
         }
-
-        return "NO MESSAGES";
+        return s.toString();
     }
 }

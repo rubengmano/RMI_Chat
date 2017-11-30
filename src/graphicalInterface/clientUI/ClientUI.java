@@ -8,13 +8,15 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.ConnectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
 
 public class ClientUI extends JFrame {
     Timer timer;
     Client client;
-    JTextArea inputMSG ,otherPanel;
+    JTextArea inputMSG ,otherPanel, ipText;
     JButton sendButton, readButton, space;
 
 
@@ -40,10 +42,9 @@ public class ClientUI extends JFrame {
         inputMSG = new JTextArea(60, 20);
         inputMSG.setWrapStyleWord(true);
         inputMSG.setLineWrap(true);
-        space = new JButton("                 ");
-        space.setOpaque(false);
-        space.setContentAreaFilled(false);
-        space.setBorderPainted(false);
+        space = new JButton("Connect");
+        space.addActionListener(new connectListener());
+        ipText = new JTextArea(2, 10);
 
     }
 
@@ -74,9 +75,12 @@ public class ClientUI extends JFrame {
 
 
         JPanel bottomPanel = new JPanel();
-        bottomPanel.add(sendButton);
+        bottomPanel.add(ipText);
         bottomPanel.add(Box.createVerticalGlue());
         bottomPanel.add(space);
+        bottomPanel.add(Box.createVerticalGlue());
+        bottomPanel.add(sendButton);
+        bottomPanel.add(Box.createVerticalGlue());
         bottomPanel.add(readButton);
 
         setLayout(new BorderLayout());
@@ -90,12 +94,29 @@ public class ClientUI extends JFrame {
 
     }
 
+    class connectListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            try {
+                client.connect(ipText.getText());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (ConnectException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     class sendButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             try {
                 client.sendMessage(inputMSG.getText());
+                inputMSG.setText("");
             } catch (ServerNotActiveException e) {
                 client.setConnected(false);
                 e.printStackTrace();

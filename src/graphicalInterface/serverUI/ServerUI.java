@@ -15,6 +15,8 @@ public class ServerUI extends JFrame {
     Server server;
     JButton startButton;
     JTable table;
+    JTextArea inputQueue;
+    JLabel setQ;
 
     public ServerUI(Server server) {
         super("SERVER");
@@ -35,6 +37,9 @@ public class ServerUI extends JFrame {
         table = new JTable(server.getRowData(), server.getColumnNames());
         startButton.addActionListener(new startButtonListener());
         table.setFillsViewportHeight(true);
+        inputQueue = new JTextArea(2, 2);
+        setQ = new JLabel("Set Queue");
+        setQ.setVisible(true);
     }
 
     private void refreshTable(){
@@ -54,6 +59,8 @@ public class ServerUI extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
 
         bottomPanel.setBackground(Color.GRAY);
+        bottomPanel.add(setQ);
+        bottomPanel.add(inputQueue);
         bottomPanel.add(startButton);
         table.setFillsViewportHeight(true);
 
@@ -68,7 +75,7 @@ public class ServerUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if(startButton.getText().equals("Connect")){
                 try {
-                    server.connect();
+                    server.connect(Integer.parseInt(inputQueue.getText()));
                 } catch (RemoteException e1) {
                     e1.printStackTrace();
                 } catch (MalformedURLException e1) {
